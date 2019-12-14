@@ -1,0 +1,77 @@
+% The function Astar takes nodes and edges csv files and returns path according to A* search algorithm
+function result = Astar(node_file,edge_file) 
+% Initialization
+node = csvread(node_file,8,0); % Read nodes file
+[n,~] = size(node); % Extract number of nodes (n) and goal node (n)
+edge = csvread(edge_file,6,0); % Read edges file
+[e,~] = size(edge); % Extract number of edges (e)
+open(1) = 1; % Assign node 1 to Open group
+closed = []; % Create closed grop
+path(1) = n; % Assign goal node to the path
+past_cost(1) = 0; % Assign past cost initial values
+past_cost(2:n) = inf; % Assign past cost initial values
+parent = zeros(1,n); % Assign initial parent nodes
+% Create cost matrix
+cost = zeros(n,n);
+for i=1:e
+    cost(edge(i,1),edge(i,2)) = edge(i,3);
+end
+cost = cost + cost';
+% Determine heuristic cost to go values
+heuristic_cost_to_go = zeros(1,n);
+for i=1:n
+    heuristic_cost_to_go(i) = sqrt(((node(n,2)-node(i,2))^2) + ((node(n,3)-node(i,3))^2));
+end
+% Determine initial estimated total cost
+est_total_cost = past_cost + heuristic_cost_to_go;
+% Start A* search
+while not(isempty(open))
+    current = open(1); % Take first member in group open as current node
+    open(1) = []; % Remove current node from open group
+    closed = [closed,current]; % Add current node to closed group
+    % Check if current node is a goal node
+    % If yes, end while loop and create path matrix and path file
+    if current == n
+        result = 'SUCCESS';
+        j = 1;
+        % Create path matrix
+        while true
+            path(j+1) = parent(path(j));
+            if path(j+1) == 1
+                break
+            end
+            j = j + 1;    
+        end
+        path = sort(path);
+        % Create path.csv file
+        csvwrite('path.csv',path);
+        break
+    end
+    % Check whether neighbor node past cost could be lower via travel
+    % through current node
+        for i=1:n  
+            if (cost(current,i) > 0) && (~any(ismember(closed,i)))
+            tentative_past_cost = past_cost(current) + cost(current,i);
+            % If yes, assign new past cost to neighbor node 
+            if tentative_past_cost < past_cost(i)
+                past_cost(i) = tentative_past_cost;
+                parent(i) = current;
+                % Add neighbor node to open group
+                open = [open,i];
+                open = unique(open);
+                % sort open group according to estimate total cost
+                est_total_cost(i) = past_cost(i) + heuristic_cost_to_go(i);
+                etc = est_total_cost(open);                
+                [~,etc_sort]=sort(etc);
+                open = open(etc_sort);    
+            end
+            end
+        end
+end
+% Retuen "FAILURE" c
+     if current ~= n
+         result = 'FAILURE';
+     end
+end
+
+
