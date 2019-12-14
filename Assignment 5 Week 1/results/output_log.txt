@@ -1,0 +1,30 @@
+Figure 1
+
+Input:
+contacts: 
+[[-1  0 -2 -1]
+ [ 0  1  1  2]]
+normal: 
+[ 3.14159265  1.57079633  0.         -1.57079633]
+
+Output:
+success: 
+True
+k: 
+[1. 1. 1. 1.]
+
+Figure 2
+
+Input:
+contacts: 
+[[-1  0  1 -1]
+ [ 0  1 -2  2]]
+normal: 
+[ 3.14159265  1.57079633  1.57079633 -1.57079633]
+
+Output:
+success: 
+False
+k: 
+[]
+
